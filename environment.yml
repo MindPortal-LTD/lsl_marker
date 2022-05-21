@@ -1,0 +1,24 @@
+name: lslmk
+channels:
+  - defaults
+dependencies:
+  - ca-certificates=2022.4.26
+  - certifi=2022.5.18.1
+  - openssl=1.1.1o
+  - pip=21.2.4
+  - python=3.9.12
+  - setuptools=61.2.0
+  - sqlite=3.38.3
+  - tzdata=2022a
+  - vc=14.2
+  - vs2015_runtime=14.27.29016
+  - wheel=0.37.1
+  - wincertstore=0.2
+  - pip:
+    - numpy==1.22.4
+    - opencv-python==4.5.5.64
+    - pylsl==1.15.0
+    - pyqt5==5.15.6
+    - pyqt5-qt5==5.15.2
+    - pyqt5-sip==12.10.1
+    - pyqtgraph==0.12.4

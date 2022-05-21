@@ -46,7 +46,7 @@ def viz_marker(trial_number=10, initial_rest=3, trial_duration=3, rest_duration=
 
 if __name__ == '__main__':
     # settings
-    trial_number = 2
+    trial_number = 20
     initial_rest = 1
     trial_duration = 2
     rest_duration = 1
