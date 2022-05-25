@@ -53,19 +53,54 @@ class TrialVisual(object):
 
     def draw_cue(self):
         # gray background
-        cv2.rectangle(self.img, (0, 0), (self.width, self.height), self.bgcol, -1)
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
         # square indicating trial ongoing
         cv2.rectangle(self.img, (self.cx-self.cue_size, self.cy-self.cue_size), 
             (self.cx+self.cue_size, self.cy+self.cue_size), self.boxcol, -1)
 
     def draw_iti(self):
         # gray background
-        cv2.rectangle(self.img, (0, 0), (self.width, self.height), self.bgcol, -1)
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
         # equal indicating trial rest
         cv2.rectangle(self.img, (self.cx-self.cross_size, self.cy-self.cross_width), 
             (self.cx+self.cross_size, self.cy+self.cross_width), self.crosscol, -1)
         cv2.rectangle(self.img, (self.cx-self.cross_size, self.cy+self.cross_size-self.cross_width), 
             (self.cx+self.cross_size, self.cy+self.cross_size+self.cross_width), self.crosscol, -1)
+
+    def draw_gabor(self, orientation, loc_y, loc_x):
+        # grating
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        gabor = cv2.getGaborKernel((100, 100), 16.0, np.radians(orientation), 10, 1, 0)
+        scaling = 0.5
+        gabor_width = int(round(self.width*scaling))
+        gabor_height = int(round(self.height*scaling))
+        gabor_img = self.create_gabor_image(gabor, (gabor_width, gabor_height))
+        # overlay
+        alpha = 1
+        self.overlay_images(self.img, gabor_img, loc_y, loc_x, alpha=alpha)
+    
+    def overlay_images(self, bg_img, fg_img, loc_y, loc_x, alpha=0.8):
+        # overlaying
+        bg_h, bg_w = bg_img.shape[0], bg_img.shape[1]
+        fg_h, fg_w = fg_img.shape[0], fg_img.shape[1]
+        start_y = loc_y
+        start_x = loc_x
+        end_y = loc_y + fg_h
+        end_x = loc_x + fg_w
+        blended = cv2.addWeighted(fg_img, 
+                                alpha, 
+                                bg_img[start_y: end_y, start_x:end_x, :], 
+                                1-alpha, 0, bg_img)
+        bg_img[start_y:end_y, start_x:end_x, :] = blended
+        return bg_img
+
+    def create_gabor_image(self, gabor, size):
+        gabor_image = gabor.copy()
+        cv2.normalize(gabor, gabor_image, 0, 255, cv2.NORM_MINMAX)
+        gabor_image = gabor_image.astype(np.uint8)
+        gabor_image = cv2.cvtColor(gabor_image, cv2.COLOR_GRAY2BGR)
+        gabor_image = cv2.resize(gabor_image, size)
+        return gabor_image
 
     def update(self):
         cv2.imshow("img", self.img)

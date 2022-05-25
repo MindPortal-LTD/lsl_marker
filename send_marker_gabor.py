@@ -3,8 +3,10 @@
 import time
 from pylsl import StreamInfo, StreamOutlet
 from trial_viz import TrialVisual
+import numpy as np
 
-def viz_marker(trial_number=10, initial_rest=3, trial_duration=3, rest_duration=2):
+def viz_marker_gabor(trial_number=10, initial_rest=3, trial_duration=3, rest_duration=2,
+                    orientations=[0, 90, 130], loc_y=0, loc_x=0):
     # create stream info
     info = StreamInfo('ExptMarkerStream', 'Markers', 1, 0, 'string', 'myuidw43536')
 
@@ -23,14 +25,18 @@ def viz_marker(trial_number=10, initial_rest=3, trial_duration=3, rest_duration=
     viz.update()
     print("exptStart")
     time.sleep(initial_rest)
-    
+
     while n < trial_number:
 
+        # random orientation
+        ori_idx = np.random.choice(np.arange(len(orientations)), 1)[0]
+        orientation = orientations[ori_idx]
         # trial start
-        outlet.push_sample(['trialStart'])
-        viz.draw_cue()
+        trial_str = f'trialStart_{orientation}'
+        outlet.push_sample([trial_str])
+        viz.draw_gabor(orientation, loc_y=loc_y, loc_x=loc_x)
         viz.update()
-        print("trialStart")
+        print(trial_str)
         time.sleep(trial_duration)
 
         # trial end
@@ -47,9 +53,14 @@ def viz_marker(trial_number=10, initial_rest=3, trial_duration=3, rest_duration=
 
 if __name__ == '__main__':
     # settings
-    trial_number = 20
+    trial_number = 3
     initial_rest = 1
     trial_duration = 2
     rest_duration = 1
+    orientations = [0, 45, 90, 135]
+    loc_y = 0
+    loc_x = 0
+
     # send marker
-    viz_marker(trial_number, initial_rest, trial_duration, rest_duration)
+    viz_marker_gabor(trial_number, initial_rest, trial_duration, rest_duration, 
+                orientations, loc_y, loc_x)

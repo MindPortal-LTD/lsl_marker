@@ -12,11 +12,11 @@ def main_marker(trial_number=10, initial_rest=3, trial_duration=3, rest_duration
 
     print("Now sending markers...")
     n = 0 # trial count
+    # initial wait
+    outlet.push_sample(['exptStart'])
+    print("exptStart")
+    time.sleep(initial_rest)
     while n < trial_number:
-        # initial wait
-        outlet.push_sample(['exptStart'])
-        print("exptStart")
-        time.sleep(initial_rest)
 
         # trial start
         outlet.push_sample(['trialStart'])
