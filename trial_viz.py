@@ -111,7 +111,32 @@ class TrialVisual(object):
 
     def blank_screen(self):
             cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
-            
+
+    def draw_square(self, SqColour):
+        # gray background
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        # square in colour SqColour
+        cv2.rectangle(self.img, (self.cx-self.cue_size, self.cy-self.cue_size), 
+            (self.cx+self.cue_size, self.cy+self.cue_size), self.color[SqColour], -1)
+
+    def draw_Go_cue(self):
+        # add little yellow star
+        phi = 4 * np.pi / 5
+        rotations = [[[np.cos(i * phi), -np.sin(i * phi)], [i * np.sin(phi), np.cos(i * phi)]] for i in range(1, 5)]
+        pentagram = np.array([[[[0, -1]] + [np.dot(m, (0, -1)) for m in rotations]]], dtype=np.float)
+        pentagram = np.round(pentagram * 10 + np.array([160, 120])).astype(np.int)
+        cv2.polylines(self.img, pentagram, True, (0, 255, 255), 9)
+
+        
+    def draw_highlighting(self, SqColour):
+        # gray background
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        # square in colour SqColour
+        cv2.rectangle(self.img, (self.cx-self.cue_size, self.cy-self.cue_size), 
+            (self.cx+self.cue_size, self.cy+self.cue_size), self.color[SqColour], -1)
+        cv2.rectangle(self.img, (self.cx-self.cue_size, self.cy-self.cue_size), 
+            (self.cx+self.cue_size, self.cy+self.cue_size), self.color['W'], -1)
+
     def update(self):
         cv2.imshow("img", self.img)
         cv2.waitKey(1)

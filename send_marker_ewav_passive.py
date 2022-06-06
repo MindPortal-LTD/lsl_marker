@@ -3,8 +3,9 @@
 import time
 from pylsl import StreamInfo, StreamOutlet
 from trial_viz import TrialVisual
+import numpy as np
 
-def viz_marker(trial_number, initial_rest, trial_duration, rest_duration, block_number):
+def viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_duration, block_number):
     # create stream info
     info = StreamInfo('ExptMarkerStream', 'Markers', 1, 0, 'string', 'myuidw43536')
 
@@ -17,42 +18,69 @@ def viz_marker(trial_number, initial_rest, trial_duration, rest_duration, block_
     # start
     print("Now sending markers...")
     b = 0 # block count
-    #if (b % 2) == 0:
-
-
-
+    
     # initial wait
     outlet.push_sample(['exptStart'])
     viz.blank_screen()
 
     viz.update()
     print("exptStart")
-    #time.sleep(initial_rest)
+    time.sleep(initial_rest)
     
     while b < block_number:
 
         if (b % 2) == 0:
-            viz.show_text("E-wave block - \n visualize selection on 3")
-            trial_str = "trialStart_exp"
+            viz.show_text("Blue square is Go stim")
+            trial_str = "trialStart_cond1"
+            GoColour = "B"
+            NoGoColour = "R"
         else:
-            viz.show_text("Rest block - \n just look at the square")
-            trial_str = "trialStart_rest"
+            viz.show_text("Red square is Go stim")
+            trial_str = "trialStart_cond2"
+            GoColour = "R"
+            NoGoColour = "B"
+        
         viz.update()
         time.sleep(initial_rest)
         viz.blank_screen()
         viz.update()
 
+        # pseudorandomize trials
+        trials = np.concatenate((np.ones(5), np.zeros(5)), axis=None)
+        np.random.shuffle(trials)
         n = 0 # trial count
 
         while n < trial_number:
-
+            
+            trial = trials[n]
             # trial start
-            outlet.push_sample([trial_str])
-            viz.draw_cue()
-            viz.update()
-            print(trial_str)
-            time.sleep(trial_duration)
+            
+            if trial == 1:
+                #Go Trial
+                outlet.push_sample([trial_str+"_Go"])
+                viz.draw_square(GoColour)
+                viz.draw_Go_cue()
+                viz.update()
+                print(trial_str+"_Go")
+                time.sleep(trial_duration/2)
 
+                timeout_start = time.time()
+                while time.time() < timeout_start + trial_duration/2:
+                    viz.draw_highlighting(GoColour)
+                    viz.update()
+                    time.sleep(0.2)
+                    viz.draw_square(GoColour)
+                    viz.update()
+                    time.sleep(0.2)
+
+            else:
+                #NoGo Trial
+                outlet.push_sample([trial_str+"_NoGo"])
+                viz.draw_square(NoGoColour)
+                viz.update()
+                print(trial_str+"_NoGo")
+                time.sleep(trial_duration)
+                
             # trial end
             outlet.push_sample(['trialEnd'])
             viz.draw_iti()
@@ -69,10 +97,10 @@ def viz_marker(trial_number, initial_rest, trial_duration, rest_duration, block_
 
 if __name__ == '__main__':
     # settings
-    trial_number = 10
+    trial_number = 10 #should be even
     initial_rest = 5
     trial_duration = 6
     rest_duration = 6
     block_number = 10
     # send marker
-    viz_marker(trial_number, initial_rest, trial_duration, rest_duration, block_number)
+    viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_duration, block_number)
