@@ -4,7 +4,7 @@ import time
 from pylsl import StreamInfo, StreamOutlet
 from trial_viz import TrialVisual
 
-def viz_marker_ewav_active(trial_number, initial_rest, trial_duration, rest_duration, block_number):
+def viz_marker(trial_number, initial_rest, trial_duration, rest_duration, block_number):
     # create stream info
     info = StreamInfo('ExptMarkerStream', 'Markers', 1, 0, 'string', 'myuidw43536')
 
@@ -17,6 +17,9 @@ def viz_marker_ewav_active(trial_number, initial_rest, trial_duration, rest_dura
     # start
     print("Now sending markers...")
     b = 0 # block count
+    #if (b % 2) == 0:
+
+
 
     # initial wait
     outlet.push_sample(['exptStart'])
@@ -24,7 +27,7 @@ def viz_marker_ewav_active(trial_number, initial_rest, trial_duration, rest_dura
 
     viz.update()
     print("exptStart")
-    time.sleep(initial_rest)
+    #time.sleep(initial_rest)
     
     while b < block_number:
 
@@ -72,4 +75,4 @@ if __name__ == '__main__':
     rest_duration = 6
     block_number = 10
     # send marker
-    viz_marker_ewav_active(trial_number, initial_rest, trial_duration, rest_duration, block_number)
+    viz_marker(trial_number, initial_rest, trial_duration, rest_duration, block_number)
