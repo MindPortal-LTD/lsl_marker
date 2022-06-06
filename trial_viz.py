@@ -39,7 +39,7 @@ class TrialVisual(object):
         self.height = self.img.shape[0]
         self.cx = int(self.width / 2)
         self.cy = int(self.height / 2)
-        self.cue_size = 20
+        self.cue_size = 60
         self.cross_size = 20
         self.cross_width = 3
 
@@ -102,6 +102,16 @@ class TrialVisual(object):
         gabor_image = cv2.resize(gabor_image, size)
         return gabor_image
 
+    def show_text(self, txt):
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        y0, dy = self.cy-50, 100
+        for i, line in enumerate(txt.split('\n')):
+            y = y0 + i*dy
+            cv2.putText(self.img, line, (int(self.cx/2), y), cv2.FONT_HERSHEY_SIMPLEX, 1, self.color['K'], 2)
+
+    def blank_screen(self):
+            cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+            
     def update(self):
         cv2.imshow("img", self.img)
         cv2.waitKey(1)
