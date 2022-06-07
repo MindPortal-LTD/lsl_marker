@@ -65,6 +65,7 @@ def viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_dur
                 time.sleep(trial_duration/2)
 
                 timeout_start = time.time()
+                outlet.push_sample(["change_start"+"_Go"])
                 while time.time() < timeout_start + trial_duration/2:
                     viz.draw_highlighting(GoColour)
                     viz.update()
@@ -79,7 +80,9 @@ def viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_dur
                 viz.draw_square(NoGoColour)
                 viz.update()
                 print(trial_str+"_NoGo")
-                time.sleep(trial_duration)
+                time.sleep(trial_duration/2)
+                outlet.push_sample(["change_start"+"_NoGo"])
+                time.sleep(trial_duration/2)
                 
             # trial end
             outlet.push_sample(['trialEnd'])
