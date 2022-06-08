@@ -25,7 +25,8 @@ def viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_dur
 
     viz.update()
     print("exptStart")
-    time.sleep(initial_rest)
+    # time.sleep(initial_rest)
+    viz.wait_key()
     
     while b < block_number:
 
@@ -41,7 +42,8 @@ def viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_dur
             NoGoColour = "B"
         
         viz.update()
-        time.sleep(initial_rest)
+        # time.sleep(initial_rest)
+        time.sleep(5)
         viz.blank_screen()
         viz.update()
 
@@ -59,7 +61,7 @@ def viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_dur
                 #Go Trial
                 outlet.push_sample([trial_str+"_Go"])
                 viz.draw_square(GoColour)
-                viz.draw_Go_cue()
+                # viz.draw_Go_cue()
                 viz.update()
                 print(trial_str+"_Go")
                 time.sleep(trial_duration/2)
@@ -101,7 +103,7 @@ def viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_dur
 if __name__ == '__main__':
     # settings
     trial_number = 10 #should be even
-    initial_rest = 5
+    initial_rest = 12
     trial_duration = 6
     rest_duration = 6
     block_number = 10

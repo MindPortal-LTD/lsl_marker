@@ -21,6 +21,8 @@ class TrialVisual(object):
         if screen_size is None:
             screen_width = 1024
             screen_height = 768
+            # screen_width = 2560
+            # screen_height = 1440
         else:
             screen_width, screen_height = screen_size
 
@@ -79,6 +81,13 @@ class TrialVisual(object):
         alpha = 1
         self.overlay_images(self.img, gabor_img, loc_y, loc_x, alpha=alpha)
     
+    def draw_banana(self, banana_img):
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        loc_y = 200
+        loc_x = 200
+        b_img = cv2.imread(banana_img)
+        self.overlay_images(self.img, b_img, loc_y, loc_x, alpha=1)
+
     def overlay_images(self, bg_img, fg_img, loc_y, loc_x, alpha=0.8):
         # overlaying
         bg_h, bg_w = bg_img.shape[0], bg_img.shape[1]
@@ -110,7 +119,10 @@ class TrialVisual(object):
             cv2.putText(self.img, line, (int(self.cx/2), y), cv2.FONT_HERSHEY_SIMPLEX, 1, self.color['K'], 2)
 
     def blank_screen(self):
-            cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+
+    def wait_key(self):
+        cv2.waitKey(0)
 
     def draw_square(self, SqColour):
         # gray background

@@ -22,7 +22,8 @@ def viz_marker(trial_number=10, initial_rest=3, trial_duration=3, rest_duration=
     viz.draw_iti()
     viz.update()
     print("exptStart")
-    time.sleep(initial_rest)
+    # time.sleep(initial_rest)
+    viz.wait_key()
     
     while n < trial_number:
 
