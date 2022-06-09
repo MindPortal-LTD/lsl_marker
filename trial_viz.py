@@ -21,6 +21,8 @@ class TrialVisual(object):
         if screen_size is None:
             screen_width = 1024
             screen_height = 768
+            # screen_width = 2560
+            # screen_height = 1440
         else:
             screen_width, screen_height = screen_size
 
@@ -39,7 +41,7 @@ class TrialVisual(object):
         self.height = self.img.shape[0]
         self.cx = int(self.width / 2)
         self.cy = int(self.height / 2)
-        self.cue_size = 20
+        self.cue_size = 60
         self.cross_size = 20
         self.cross_width = 3
 
@@ -79,6 +81,13 @@ class TrialVisual(object):
         alpha = 1
         self.overlay_images(self.img, gabor_img, loc_y, loc_x, alpha=alpha)
     
+    def draw_banana(self, banana_img):
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        loc_y = 200
+        loc_x = 200
+        b_img = cv2.imread(banana_img)
+        self.overlay_images(self.img, b_img, loc_y, loc_x, alpha=1)
+
     def overlay_images(self, bg_img, fg_img, loc_y, loc_x, alpha=0.8):
         # overlaying
         bg_h, bg_w = bg_img.shape[0], bg_img.shape[1]
@@ -101,6 +110,44 @@ class TrialVisual(object):
         gabor_image = cv2.cvtColor(gabor_image, cv2.COLOR_GRAY2BGR)
         gabor_image = cv2.resize(gabor_image, size)
         return gabor_image
+
+    def show_text(self, txt):
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        y0, dy = self.cy-50, 100
+        for i, line in enumerate(txt.split('\n')):
+            y = y0 + i*dy
+            cv2.putText(self.img, line, (int(self.cx/2), y), cv2.FONT_HERSHEY_SIMPLEX, 1, self.color['K'], 2)
+
+    def blank_screen(self):
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+
+    def wait_key(self):
+        cv2.waitKey(0)
+
+    def draw_square(self, SqColour):
+        # gray background
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        # square in colour SqColour
+        cv2.rectangle(self.img, (self.cx-self.cue_size, self.cy-self.cue_size), 
+            (self.cx+self.cue_size, self.cy+self.cue_size), self.color[SqColour], -1)
+
+    def draw_Go_cue(self):
+        # add little yellow star
+        phi = 4 * np.pi / 5
+        rotations = [[[np.cos(i * phi), -np.sin(i * phi)], [i * np.sin(phi), np.cos(i * phi)]] for i in range(1, 5)]
+        pentagram = np.array([[[[0, -1]] + [np.dot(m, (0, -1)) for m in rotations]]], dtype=np.float)
+        pentagram = np.round(pentagram * 10 + np.array([160, 120])).astype(np.int)
+        cv2.polylines(self.img, pentagram, True, (0, 255, 255), 9)
+
+        
+    def draw_highlighting(self, SqColour):
+        # gray background
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        # square in colour SqColour
+        cv2.rectangle(self.img, (self.cx-self.cue_size, self.cy-self.cue_size), 
+            (self.cx+self.cue_size, self.cy+self.cue_size), self.color[SqColour], -1)
+        cv2.rectangle(self.img, (self.cx-self.cue_size, self.cy-self.cue_size), 
+            (self.cx+self.cue_size, self.cy+self.cue_size), self.color['W'], -1)
 
     def update(self):
         cv2.imshow("img", self.img)
