@@ -5,7 +5,6 @@ import cv2
 import time
 import numpy as np
 
-
 class TrialVisual(object):
     # Default setting
     color = dict(G=(20, 140, 0), B=(210, 0, 0), R=(0, 50, 200),
