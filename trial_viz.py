@@ -89,6 +89,16 @@ class TrialVisual(object):
         b_img = cv2.imread(banana_img)
         self.overlay_images(self.img, b_img, loc_y, loc_x, alpha=1)
 
+    def draw_image(self, img):
+        # read image
+        image = cv2.imread(img)
+        # show the image, provide window name first
+        cv2.imshow('image window', image)
+        # # add wait key. window waits until user presses a key
+        # cv2.waitKey(0)
+        # # and finally destroy/close all open windows
+        # cv2.destroyAllWindows()
+
     def overlay_images(self, bg_img, fg_img, loc_y, loc_x, alpha=0.8):
         # overlaying
         bg_h, bg_w = bg_img.shape[0], bg_img.shape[1]
@@ -118,6 +128,19 @@ class TrialVisual(object):
         for i, line in enumerate(txt.split('\n')):
             y = y0 + i*dy
             cv2.putText(self.img, line, (int(self.cx/2), y), cv2.FONT_HERSHEY_SIMPLEX, 1, self.color['K'], 2)
+
+    def show_numbers_and_square(self, txt, SqColour):
+        # display numbers
+        cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)
+        # y0, dy = self.cy-50, 100
+        # for i, line in enumerate(txt.split('\n')):
+        #     y = y0 + i*dy
+        cv2.putText(self.img, txt, (475, 480), cv2.FONT_HERSHEY_SIMPLEX, 1, self.color['K'], 2)
+
+        # display square
+        # square in colour SqColour
+        cv2.rectangle(self.img, (self.cx - self.cue_size, self.cy - self.cue_size),
+                      (self.cx + self.cue_size, self.cy + self.cue_size), self.color[SqColour], -1)
 
     def blank_screen(self):
         cv2.rectangle(self.img, (0, 0), (self.height, self.width), self.bgcol, -1)

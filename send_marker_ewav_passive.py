@@ -47,7 +47,8 @@ def viz_marker_ewav_passive(trial_number, initial_rest, trial_duration, rest_dur
         
         viz.update()
         # time.sleep(initial_rest)
-        time.sleep(5)
+        # time.sleep(5)
+        time.sleep(1) # CHANGED
         viz.blank_screen()
         viz.update()
 
