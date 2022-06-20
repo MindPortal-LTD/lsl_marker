@@ -49,6 +49,7 @@ def viz_marker_banana(trial_number, initial_rest, trial_duration, rest_duration,
             outlet.push_sample([trial_str])
             idx = random.randint(0, 4)
             viz.draw_banana(f'./images/fruits-dataset{idx}.png')
+            viz.dr
             viz.update()
             print(trial_str)
             time.sleep(trial_duration)
