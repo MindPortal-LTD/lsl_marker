@@ -19,8 +19,8 @@ from scipy.signal import butter, lfilter
 
 
 # Basic parameters for the plotting window
-plot_duration = 5  # how many seconds of data to show
-update_interval = 600  # ms between screen updates
+plot_duration = 10  # how many seconds of data to show
+update_interval = 1000  # ms between screen updates
 pull_interval = 1000  # ms between each pull operation
 
 
@@ -59,6 +59,7 @@ class DataInlet(Inlet):
         super().__init__(info)
         # calculate the size for our buffer, i.e. two times the displayed data
         bufsize = (2 * math.ceil(info.nominal_srate() * plot_duration), info.channel_count())
+        # bufsize = (2 * math.ceil(info.nominal_srate()/20), info.channel_count())
         self.buffer = np.empty(bufsize, dtype=self.dtypes[info.channel_format()])
         empty = np.array([])
         # create one curve object for each channel/line that will handle displaying the data
@@ -83,7 +84,7 @@ class DataInlet(Inlet):
             b, a = butter(order, [low, high], btype='band')
             return b, a
 
-        def butter_bandpass_filter(data, lowcut=0.1, highcut=30, fs=500, order=5):
+        def butter_bandpass_filter(data, lowcut=0.1, highcut=30, fs=500, order=3):
             b, a = butter_bandpass(lowcut, highcut, fs, order=order)
             y = lfilter(b, a, data)
             return y
@@ -92,11 +93,19 @@ class DataInlet(Inlet):
         if ts:
             ts = np.asarray(ts)
             y_tmp = self.buffer[0:ts.size, :]
-            y = butter_bandpass_filter(y_tmp, 0.1, 30, 500, order=6)
+            y = butter_bandpass_filter(y_tmp, 0.1, 30, 500, order=3)
+            # y = np.convolve(ts, y)
+            # y = y.cumsum(axis=0)
+            # print(y.shape)
+            # print(ts.shape)
+            # for i in range(self.channel_count):
+                # self.curves[i].setData(x=ts, y=y[:, i])
+            # Rolling average of y values
             this_x = None
             old_offset = 0
             new_offset = 0
             for ch_ix in range(self.channel_count):
+            # for ch_ix in range(1):
                 # we don't pull an entire screen's worth of data, so we have to
                 # trim the old data and append the new data to it
                 old_x, old_y = self.curves[ch_ix].getData()
@@ -114,7 +123,7 @@ class DataInlet(Inlet):
                 # append new data to the trimmed old data
                 this_y = np.hstack((old_y[old_offset:], y[new_offset:, ch_ix] - ch_ix))
                 # replace the old data
-                self.curves[ch_ix].setData(this_x, this_y)
+                self.curves[ch_ix].setData(this_x, this_y, fftMode=True)
 
 
 class MarkerInlet(Inlet):
@@ -139,6 +148,7 @@ def main():
     # Create the pyqtgraph window
     pw = pg.plot(title='LSL Plot')
     plt = pw.getPlotItem()
+    # plt.enableAutoRange(x=False, y=True)
     plt.enableAutoRange(x=False, y=True)
 
     # iterate over found streams, creating specialized inlet objects that will
@@ -152,8 +162,9 @@ def main():
             inlets.append(MarkerInlet(info))
         elif info.nominal_srate() != pylsl.IRREGULAR_RATE \
                 and info.channel_format() != pylsl.cf_string:
-            print('Adding data inlet: ' + info.name())
-            inlets.append(DataInlet(info, plt))
+            if info.name() == 'actiCHamp-21090646':
+                print('Adding data inlet: ' + info.name())
+                inlets.append(DataInlet(info, plt))
         else:
             print('Don\'t know what to do with stream ' + info.name())
 
