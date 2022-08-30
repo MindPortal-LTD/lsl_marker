@@ -21,4 +21,4 @@ def unity_marker(random=True, wait_duration=0.005):
             time.sleep(wait_duration)
 
 if __name__ == '__main__':
-    unity_marker(random=True, wait_duration=0.005)
+    unity_marker(random=True, wait_duration=0.01)

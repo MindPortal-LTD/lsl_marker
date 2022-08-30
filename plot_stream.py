@@ -15,6 +15,8 @@ import pylsl
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtWidgets
 from typing import List
+from scipy.signal import butter, lfilter
+
 
 # Basic parameters for the plotting window
 plot_duration = 5  # how many seconds of data to show
@@ -65,15 +67,32 @@ class DataInlet(Inlet):
         for curve in self.curves:
             plt.addItem(curve)
 
+
+
+
     def pull_and_plot(self, plot_time, plt):
         # pull the data
         _, ts = self.inlet.pull_chunk(timeout=0.0,
                                       max_samples=self.buffer.shape[0],
                                       dest_obj=self.buffer)
+
+        def butter_bandpass(lowcut=0.1, highcut=30, fs=500, order=5):
+            nyq = 0.5 * fs
+            low = lowcut / nyq
+            high = highcut / nyq
+            b, a = butter(order, [low, high], btype='band')
+            return b, a
+
+        def butter_bandpass_filter(data, lowcut=0.1, highcut=30, fs=500, order=5):
+            b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+            y = lfilter(b, a, data)
+            return y
+
         # ts will be empty if no samples were pulled, a list of timestamps otherwise
         if ts:
             ts = np.asarray(ts)
-            y = self.buffer[0:ts.size, :]
+            y_tmp = self.buffer[0:ts.size, :]
+            y = butter_bandpass_filter(y_tmp, 0.1, 30, 500, order=6)
             this_x = None
             old_offset = 0
             new_offset = 0
